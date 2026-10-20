@@ -1,0 +1,61 @@
+{
+  "steps": [
+    {
+      "name": "gcr.io/cloud-builders/gsutil",
+      "args": [
+        "cp",
+        "gs://${_MODEL_REPO}/${_MODEL_FILE}",
+        "./model/model.pkl"
+      ]
+    },
+    {
+      "name": "gcr.io/cloud-builders/gsutil",
+      "args": [
+        "cp",
+        "gs://${_MODEL_REPO}/scaler_model.pkl",
+        "./models/scaler_model.pkl"
+        ]    
+     },
+     {
+      "name": "gcr.io/cloud-builders/docker",
+      "args": [
+        "build",
+        "-t",
+        "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE_NAME}:0.0.1",
+        "."
+      ]
+    },
+    {
+      "name": "gcr.io/cloud-builders/docker",
+      "args": [
+        "push",
+        "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE_NAME}:0.0.1"
+      ]
+    },
+    {
+      "name": "gcr.io/google.com/cloudsdktool/cloud-sdk",
+      "entrypoint": "gcloud",
+      "args": [
+        "run",
+        "deploy",
+        "${_SERVICE_NAME}",
+        "--image",
+        "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE_NAME}:0.0.1",
+        "--region",
+        "${_LOCATION}",
+        "--platform",
+        "managed",
+        "--port",
+        "5000",
+        "--cpu",
+        "2",
+        "--memory",
+        "4G",
+        "--allow-unauthenticated"
+      ]
+    }
+  ],
+  "options": {
+    "logging": "CLOUD_LOGGING_ONLY"
+  }
+}

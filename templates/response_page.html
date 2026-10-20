@@ -1,0 +1,17 @@
+<html>
+<head>
+    <title>Likelihood of good wine</title>
+</head>
+<body>
+
+{% if prediction_variable > 6.5 %}
+    <p>It is likely this is good wine.</p>
+    
+{% elif prediction_variable > 4.5 %}
+    <p>It is likely this is medium wine.</p>
+{% else%}
+    <p>It is likely this is bad wine.</p>
+{% endif %}
+</body>
+</html>
+<!-- check https://flask.palletsprojects.com/en/2.3.x/tutorial/templates/ for information if needed -->
